@@ -1,19 +1,24 @@
 const { app, BrowserWindow } = require("electron");
 const contextMenu = require('electron-context-menu');
 
+const DEFAULT_WIDTH = 1280;
+const DEFAULT_HEIGHT = 720;
+const profileCmdlineSwitchName = "profile-name";
+
 contextMenu({
-	showSaveImageAs: false,
+  showSaveImageAs: false,
   showSearchWithGoogle: false,
   showInspectElement: false,
   showCopyLink: true
 });
 
 let mainWindow;
+let profileName;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: DEFAULT_WIDTH,
+    height: DEFAULT_HEIGHT,
     icon: __dirname + "/icon.jpg",
     frame: true,
   });
@@ -29,7 +34,7 @@ function createWindow() {
   .officeApps {
     display: none !important;
   }
-  
+
   #toDoSearchBox {
     padding: 0 10px;
   }
@@ -41,6 +46,39 @@ function createWindow() {
   mainWindow.on("closed", function () {
     mainWindow = null;
   });
+
+  mainWindow.webContents.on("page-title-updated", () => {
+    if (profileName) {
+      mainWindow.setTitle(app.getName() + " (" + profileName + ")");
+    }
+    else {
+      mainWindow.setTitle(app.getName());
+    }
+  });
+
+  mainWindow.webContents.setWindowOpenHandler((details) => {
+    if (details.disposition === 'foreground-tab' || details.disposition === 'new-window') {
+      require('electron').shell.openExternal(details.url);
+      return {
+        action: 'deny',
+      }
+    }
+
+    return {
+      action: 'allow',
+      createWindow: (options) => {
+        const browserView = new BrowserView(options)
+        mainWindow.addBrowserView(browserView)
+        browserView.setBounds({ x: 0, y: 0, width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT })
+        return browserView.webContents
+      }
+    }
+  })
+}
+
+if (app.commandLine.hasSwitch(profileCmdlineSwitchName) && app.commandLine.getSwitchValue(profileCmdlineSwitchName)) {
+  profileName = app.commandLine.getSwitchValue(profileCmdlineSwitchName);
+  app.setPath("sessionData", app.getPath("sessionData") + "-" + app.commandLine.getSwitchValue(profileCmdlineSwitchName));
 }
 
 app.on("browser-window-created", function (e, window) {
