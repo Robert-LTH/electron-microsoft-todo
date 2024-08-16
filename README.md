@@ -2,12 +2,10 @@
 
 Electron Version of Microsoft To-Do
 
-[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/microsoft-todo-unofficial)
-
 ## Run
 
 ```bash
-git clone https://github.com/patrick330602/electron-microsoft-todo.git
+git clone https://github.com/Robert-LTH/electron-microsoft-todo.git
 cd electron-microsoft-todo
 npm install & npm start
 ```
@@ -15,3 +13,10 @@ npm install & npm start
 ## License
 
 MIT
+
+## Other applications
+
+This project works well with other applications as well. Refer to the following list for URLs:
+
+- Microsoft Planner - https://tasks.office.com/
+- Microsoft Outlook (OWA) - https://outlook.office.com/mail/
